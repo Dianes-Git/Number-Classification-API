@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Query
+from fastapi import FastAPI, Query, HTTPException
 from starlette.middleware.cors import CORSMiddleware
 import requests
 
@@ -12,6 +12,10 @@ app.add_middleware(
     allow_methods=["*"],  # Allows all methods (GET, POST, etc.)
     allow_headers=["*"],  # Allows all headers
 )
+
+@app.get("/")
+def read_root():
+    raise HTTPException(status_code=400, detail="Bad Request: Invalid endpoint, please use '/api/classify-number'")
 
 def is_prime(n):
     """Check if a number is prime."""
@@ -34,11 +38,6 @@ def is_armstrong(n):
 @app.get("/api/classify-number")
 def classify_number(number: int = Query(..., description="Number to classify")):
     """API Endpoint to classify a number."""
-    
-    # If the input is not a valid integer, return a 400 Bad Request with the specified format
-    if isinstance(number, str):  # If the value is a string, return 400 error format
-        return {"number": "alphabet", "error": True}
-
     properties = []
 
     # Check if the number is Armstrong, odd/even
