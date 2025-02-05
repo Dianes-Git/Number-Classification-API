@@ -23,8 +23,8 @@ def is_prime(n: int) -> bool:
     return True
 
 def is_perfect(n: int) -> bool:
-    """Check if a number is a perfect number."""
-    if n % 1 != 0:  # Ensure it's an integer
+    """Check if a number is a perfect number. 0 should NOT be perfect."""
+    if n <= 0 or n % 1 != 0:  # 0 and negatives cannot be perfect
         return False
     return sum(i for i in range(1, int(n)) if int(n) % i == 0) == int(n)
 
@@ -85,7 +85,7 @@ def classify_number(number: float = Query(..., description="Number to classify")
 
 @app.exception_handler(422)
 async def validation_exception_handler(request, exc):
-    """Handles invalid inputs (e.g., text input instead of numbers)."""
+    """Handles invalid inputs (e.g., text input instead of numbers) and ensures 400 Bad Request."""
     return JSONResponse(
         status_code=400,
         content={"error": True, "message": "Invalid input. Please provide a valid number."},
