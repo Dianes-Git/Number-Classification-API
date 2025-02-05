@@ -1,7 +1,17 @@
 from fastapi import FastAPI, Query
+from starlette.middleware.cors import CORSMiddleware
 import requests
 
 app = FastAPI()
+
+# Enable CORS for all origins
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allows all origins, you can specify more strict rules
+    allow_credentials=True,
+    allow_methods=["*"],  # Allows all methods (GET, POST, etc.)
+    allow_headers=["*"],  # Allows all headers
+)
 
 def is_prime(n):
     """Check if a number is prime."""
@@ -55,4 +65,3 @@ def classify_number(number: int = Query(..., description="Number to classify")):
     }
 
     return response
-
