@@ -24,16 +24,27 @@ def is_armstrong(n):
 @app.get("/api/classify-number")
 def classify_number(number: int = Query(..., description="Number to classify")):
     """API Endpoint to classify a number."""
-    properties = ["odd" if number % 2 else "even"]
+    properties = []
+
+    # Check if the number is Armstrong, odd/even
     if is_armstrong(number):
-        properties.insert(0, "armstrong")
+        properties.append("armstrong")
+    if number % 2 == 0:
+        properties.append("even")
+    else:
+        properties.append("odd")
 
-    # Fetch fun fact from Numbers API
-    try:
-        fun_fact = requests.get(f"http://numbersapi.com/{number}/math").text
-    except:
-        fun_fact = "No fun fact available."
+    # Create the fun fact for Armstrong numbers
+    if is_armstrong(number):
+        # Generate the Armstrong number fun fact with the correct formula
+        digits = [int(d) for d in str(number)]
+        powers = " + ".join([f"{d}^{len(digits)}" for d in digits])
+        fun_fact = f"{number} is an Armstrong number because {powers} = {number}"
+    else:
+        # If it's not Armstrong, provide a fallback fun fact
+        fun_fact = f"{number} is not an Armstrong number."
 
+    # Construct the response
     response = {
         "number": number,
         "is_prime": is_prime(number),
@@ -42,5 +53,6 @@ def classify_number(number: int = Query(..., description="Number to classify")):
         "digit_sum": sum(map(int, str(number))),
         "fun_fact": fun_fact
     }
-    
+
     return response
+
