@@ -24,17 +24,45 @@ This project implements a FastAPI-based API that classifies a number based on ma
 ## Example Response (400 Bad Request)
 <img width="1267" alt="Screenshot 2025-02-05 at 19 34 00" src="https://github.com/user-attachments/assets/5e5eb68e-a033-4d50-b18f-7d760e196854" />
 
-## Setup
-- 1. Install Dependencies
+# Setup
+## 1. Install Dependencies
 - Create a virtual environment and install the necessary dependencies:
  ```bash
 python -m venv venv
 source venv/bin/activate  # On Windows use venv\Scripts\activate
 pip install fastapi uvicorn requests
 ```
-- 2. Run the API Locally
-To start the development server, use:
+## 2. Run the API Locally
+- To start the development server, use:
 - `uvicorn main:app --reload
 `
+## 3. Deploying to Render
+- Push your code to GitHub: Make sure your GitHub repository is public.
+- Sign up and log into Render.
+- Create a new web service: Select the repository linked to your GitHub.
+- Configure the service:
+-  Set the environment to Python.
+- Ensure requirements.txt and the necessary configuration files are present in your repository.
+- Deploy: Once the deployment is complete, Render will provide a URL for your deployed API.
 
-This will run the application locally on http://127.0.0.1:8000
+## 4. Test the API
+You can test the API in a browser (https://number-classification-api-ie3u.onrender.com/api/classify-number?number=371)
+
+## 5. CORS Handling
+The application has CORS enabled using Starlette's CORSMiddleware to allow cross-origin requests. This allows your API to be accessed from different domains. You can customize the allowed origins if necessary by modifying the allow_origins parameter.
+ ```bash
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allows all origins, you can specify more strict rules
+    allow_credentials=True,
+    allow_methods=["*"],  # Allows all methods (GET, POST, etc.)
+    allow_headers=["*"],  # Allows all headers
+)
+```
+## Version Control
+The code is hosted on GitHub, and the repository is public.
+The README.md file provides a description of the project and instructions for setting it up and using it.
+Repository: [https://github.com/Dianes-Git/Number-Classification-API.git]
+
+## Author
+Diane Ihezue
