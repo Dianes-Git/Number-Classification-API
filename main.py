@@ -15,7 +15,7 @@ app.add_middleware(
 
 def is_prime(n: int) -> bool:
     """Check if a number is prime."""
-    if n < 2 or n % 1 != 0:  # Ensure it's an integer
+    if n < 2 or n % 1 != 0:
         return False
     for i in range(2, int(n ** 0.5) + 1):
         if n % i == 0:
@@ -24,13 +24,13 @@ def is_prime(n: int) -> bool:
 
 def is_perfect(n: int) -> bool:
     """Check if a number is a perfect number. 0 should NOT be perfect."""
-    if n <= 0 or n % 1 != 0:  # 0 and negatives cannot be perfect
+    if n <= 0 or n % 1 != 0:
         return False
     return sum(i for i in range(1, int(n)) if int(n) % i == 0) == int(n)
 
 def is_armstrong(n: int) -> bool:
     """Check if a number is an Armstrong number."""
-    if n % 1 != 0:  # Ensure it's an integer
+    if n % 1 != 0:
         return False
     digits = [int(d) for d in str(abs(int(n)))]
     return sum(d ** len(digits) for d in digits) == abs(int(n))
@@ -41,22 +41,28 @@ def read_root():
     raise HTTPException(status_code=400, detail="Invalid endpoint. Use '/api/classify-number'")
 
 @app.get("/api/classify-number")
-def classify_number(number: float = Query(..., description="Number to classify")):
+def classify_number(number: str = Query(..., description="Number to classify")):
     """API Endpoint to classify a number."""
     
+    # Validate number format
+    if not number.replace(".", "").replace("-", "").isdigit():
+        return JSONResponse(
+            status_code=400,
+            content={"number": number, "error": True, "message": "Invalid number format"},
+        )
+    
     try:
-        number = float(number)  # Convert to float
-        if number % 1 == 0:  # If it's a whole number, convert to int
+        number = float(number)
+        if number % 1 == 0:
             number = int(number)
     except Exception:
         return JSONResponse(
             status_code=400,
-            content={"number": str(number), "error": True, "message": "Invalid number format"},
+            content={"number": number, "error": True, "message": "Invalid number format"},
         )
 
     properties = []
     
-    # Check if the number is Armstrong, odd/even
     if is_armstrong(number):
         properties.append("armstrong")
     if number % 2 == 0:
@@ -64,7 +70,6 @@ def classify_number(number: float = Query(..., description="Number to classify")
     else:
         properties.append("odd")
 
-    # Create the fun fact for Armstrong numbers
     if is_armstrong(number):
         digits = [int(d) for d in str(abs(int(number)))]
         powers = " + ".join([f"{d}^{len(digits)}" for d in digits])
@@ -85,7 +90,7 @@ def classify_number(number: float = Query(..., description="Number to classify")
 
 @app.exception_handler(422)
 async def validation_exception_handler(request, exc):
-    """Handles invalid inputs (e.g., text input instead of numbers) and ensures 400 Bad Request."""
+    """Ensures invalid inputs return a 400 Bad Request."""
     return JSONResponse(
         status_code=400,
         content={"error": True, "message": "Invalid input. Please provide a valid number."},
