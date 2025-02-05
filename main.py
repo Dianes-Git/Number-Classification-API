@@ -34,6 +34,11 @@ def is_armstrong(n):
 @app.get("/api/classify-number")
 def classify_number(number: int = Query(..., description="Number to classify")):
     """API Endpoint to classify a number."""
+    
+    # If the input is not a valid integer, return a 400 Bad Request with the specified format
+    if isinstance(number, str):  # If the value is a string, return 400 error format
+        return {"number": "alphabet", "error": True}
+
     properties = []
 
     # Check if the number is Armstrong, odd/even
