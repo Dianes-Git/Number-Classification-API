@@ -1,7 +1,6 @@
 from fastapi import FastAPI, Query, HTTPException
 from starlette.middleware.cors import CORSMiddleware
 from starlette.responses import JSONResponse
-import requests
 
 app = FastAPI()
 
@@ -16,7 +15,7 @@ app.add_middleware(
 
 def is_prime(n: int) -> bool:
     """Check if a number is prime."""
-    if n < 2:
+    if n < 2 or n % 1 != 0:  # Ensure it's an integer
         return False
     for i in range(2, int(n ** 0.5) + 1):
         if n % i == 0:
@@ -25,12 +24,16 @@ def is_prime(n: int) -> bool:
 
 def is_perfect(n: int) -> bool:
     """Check if a number is a perfect number."""
-    return sum(i for i in range(1, n) if n % i == 0) == n
+    if n % 1 != 0:  # Ensure it's an integer
+        return False
+    return sum(i for i in range(1, int(n)) if int(n) % i == 0) == int(n)
 
 def is_armstrong(n: int) -> bool:
     """Check if a number is an Armstrong number."""
-    digits = [int(d) for d in str(abs(n))]  # Ensure it works with negative numbers
-    return sum(d ** len(digits) for d in digits) == abs(n)
+    if n % 1 != 0:  # Ensure it's an integer
+        return False
+    digits = [int(d) for d in str(abs(int(n)))]
+    return sum(d ** len(digits) for d in digits) == abs(int(n))
 
 @app.get("/")
 def read_root():
@@ -41,19 +44,18 @@ def read_root():
 def classify_number(number: float = Query(..., description="Number to classify")):
     """API Endpoint to classify a number."""
     
-    # Ensure the number is valid
     try:
-        number = float(number)  # Convert to float to handle decimals
-        if number.is_integer():
-            number = int(number)  # Convert back to int if it's a whole number
-    except ValueError:
+        number = float(number)  # Convert to float
+        if number % 1 == 0:  # If it's a whole number, convert to int
+            number = int(number)
+    except Exception:
         return JSONResponse(
             status_code=400,
             content={"number": str(number), "error": True, "message": "Invalid number format"},
         )
 
     properties = []
-
+    
     # Check if the number is Armstrong, odd/even
     if is_armstrong(number):
         properties.append("armstrong")
@@ -64,7 +66,7 @@ def classify_number(number: float = Query(..., description="Number to classify")
 
     # Create the fun fact for Armstrong numbers
     if is_armstrong(number):
-        digits = [int(d) for d in str(abs(number))]
+        digits = [int(d) for d in str(abs(int(number)))]
         powers = " + ".join([f"{d}^{len(digits)}" for d in digits])
         fun_fact = f"{number} is an Armstrong number because {powers} = {number}"
     else:
@@ -75,7 +77,7 @@ def classify_number(number: float = Query(..., description="Number to classify")
         "is_prime": is_prime(number),
         "is_perfect": is_perfect(number),
         "properties": properties,
-        "digit_sum": sum(map(int, str(abs(number)))),
+        "digit_sum": sum(map(int, str(abs(int(number))))),
         "fun_fact": fun_fact
     }
 
