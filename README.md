@@ -3,11 +3,26 @@
 This project implements a FastAPI-based API that classifies a number based on mathematical properties. The API handles requests to classify a number and provides a detailed response including fun facts, properties (e.g., Armstrong, prime, even/odd), and a digit sum. 
 
 ## Features
-- Classifies numbers as prime, perfect, Armstrong, odd, or even.
-- Provides a fun fact about the number.
-- Returns responses in JSON format.
-- Handles CORS to allow cross-origin requests.
-- Handles invalid inputs and returns an appropriate error response (400 Bad Request).
+
+- Determines if a number is:
+
+  - Prime
+
+  - Perfect
+
+  - Armstrong
+
+  - Odd or Even
+
+- Computes the sum of digits
+
+- Provides a fun fact about the number
+
+- Proper error handling (returns HTTP 400 for invalid input)
+
+- Supports floating-point numbers and negative numbers
+
+- Implements CORS support
 
 ## Technologies Used
 - Python: Programming language for implementing the API.
@@ -17,6 +32,87 @@ This project implements a FastAPI-based API that classifies a number based on ma
 - GitHub: Version control and repository hosting.
 - Render: Platform for deploying the API.
 - CORS Middleware: To handle cross-origin resource sharing (CORS).
+
+
+Endpoints
+
+1. Classify a Number
+
+Endpoint:
+
+`GET /api/classify-number?number=<value>
+`
+
+Query Parameters:
+
+- number (float) - The number to classify.
+
+Example Request:
+
+`GET /api/classify-number?number=153
+`
+Example Response:
+
+` {
+    "number": 153,
+    "is_prime": false,
+    "is_perfect": false,
+    "properties": ["armstrong", "odd"],
+    "digit_sum": 9,
+    "fun_fact": "153 is an Armstrong number because 1^3 + 5^3 + 3^3 = 153"
+}
+`
+
+2. Invalid Input Handling
+
+ Example Request:
+
+GET /api/classify-number?number=abc
+
+Example Response (400 Bad Request):
+
+{
+    "number": "abc",
+    "error": true,
+    "message": "Invalid input. Please provide a valid number."
+}
+
+Error Handling
+
+Invalid input (non-numeric values) returns HTTP 400.
+
+Requests to unknown endpoints return HTTP 400.
+
+## Deployment Instructions
+
+1. Clone the Repository
+
+git clone https://github.com/Dianes-Git/number-classification-api.git
+cd number-classification-api
+
+2. Install Dependencies
+
+pip install -r requirements.txt
+
+3. Run Locally
+
+uvicorn main:app --reload
+
+4. Deploy on Render
+
+Create a new Web Service on Render
+
+Connect your GitHub repository
+
+Set the Build Command: pip install -r requirements.txt
+
+Set the Start Command: uvicorn main:app --host 0.0.0.0 --port 10000
+
+Choose Free Instance Type (or upgrade if needed)
+
+Deploy!
+
+
 
 ## Example Response (200 OK)
 <img width="1280" alt="Screenshot 2025-02-05 at 19 09 30" src="https://github.com/user-attachments/assets/cd12015a-d311-4b65-b2ed-0d4df18f2661" />
